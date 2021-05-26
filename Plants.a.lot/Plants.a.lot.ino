@@ -1,12 +1,12 @@
 //Plants.a.lot
-#include <FastLED.h>
-#include <Bounce2.h> 
-#include <DHT.h>;
+#include <FastLED.h>//LED Ring
+#include <Bounce2.h> //button
+#include <DHT.h>;//humidity
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
-#include "Adafruit_TSL2591.h"
+#include "Adafruit_TSL2591.h"//lux
 
-Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591); 
+Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);//lux
 
 // Common naming from FastLED demos
 #define DATA_PIN 17
@@ -33,21 +33,6 @@ Bounce button1 = Bounce();
 // Array of led data
 CRGB leds[NUM_LEDS];
 
-void displaySensorDetails(void)//lux sensor
-{
-  sensor_t sensor;
-  tsl.getSensor(&sensor);
-  Serial.println(F("------------------------------------"));
-  Serial.print  (F("Sensor:       ")); Serial.println(sensor.name);
-  Serial.print  (F("Driver Ver:   ")); Serial.println(sensor.version);
-  Serial.print  (F("Unique ID:    ")); Serial.println(sensor.sensor_id);
-  Serial.print  (F("Max Value:    ")); Serial.print(sensor.max_value); Serial.println(F(" lux"));
-  Serial.print  (F("Min Value:    ")); Serial.print(sensor.min_value); Serial.println(F(" lux"));
-  Serial.print  (F("Resolution:   ")); Serial.print(sensor.resolution, 4); Serial.println(F(" lux"));  
-  Serial.println(F("------------------------------------"));
-  Serial.println(F(""));
-  delay(500);
-}
 
 void configureSensor(void)
 {
@@ -117,9 +102,6 @@ void setup()
     while (1);
   }
   
-   /* Display some basic information on this sensor */
-  displaySensorDetails();//lux
-  
   /* Configure the sensor */
   configureSensor();//lux
 }
@@ -133,7 +115,7 @@ void simpleRead(void)
   //uint16_t x = tsl.getLuminosity(TSL2591_FULLSPECTRUM);
   //uint16_t x = tsl.getLuminosity(TSL2591_INFRARED);
 
-  Serial.print(F("[ ")); Serial.print(millis()); Serial.print(F(" ms ] "));
+ 
   Serial.print(F("Luminosity: "));
   Serial.println(x, DEC);
 }
@@ -160,19 +142,19 @@ void loop() {
         FastLED.show();
     }
 
-   EVERY_N_MILLIS(2) 
-   {
-      // Clear strip
-      FastLED.clear();
-      
-      // beat8(x) returns a number from 0 to 255, looping x times per minute
-      uint8_t pos = beat8(bpm)+127; // so you move it to the other side
-
-      // Convert the position to an index for the LED on our strip
-      uint8_t led = map8(pos,0,NUM_LEDS-1);
-      leds[led] = CRGB::Green;
-      FastLED.show();
-   }
+//   EVERY_N_MILLIS(2) 
+//   {
+//      // Clear strip
+//      FastLED.clear();
+//      
+//      // beat8(x) returns a number from 0 to 255, looping x times per minute
+//      uint8_t pos = beat8(bpm)+127; // so you move it to the other side
+//
+//      // Convert the position to an index for the LED on our strip
+//      uint8_t led = map8(pos,0,NUM_LEDS-1);
+//      leds[led] = CRGB::Green;
+//      FastLED.show();
+//   }
   }
 
    if(button1.rose())
@@ -189,7 +171,8 @@ void loop() {
     //Print temp and humidity values to serial monitor
     Serial.print("Humidity: ");
     Serial.print(hum);
-    Serial.print(" %, Temp: ");
+    Serial.println(" %");
+    Serial.print("Temp: ");
     Serial.print(temp);
     Serial.println(" Celsius");
     Serial.print("Humidity Soil: ");
