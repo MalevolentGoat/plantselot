@@ -12,6 +12,7 @@ Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);
 #define DATA_PIN 17
 #define NUM_LEDS 12
 #define DHTPIN 18 
+#define AUDIO_PIN 5;
 
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 DHT dht(DHTPIN, DHTTYPE); //// Initialize DHT sensor for normal 16mhz Arduino
@@ -138,6 +139,10 @@ void simpleRead(void)
   Serial.println(x, DEC);
 }
 
+void playAudio() {
+    digitalWrite(AUDIO_PIN, HIGH);
+    digitalWrite(AUDIO_PIN, LOW);
+}
 
 void loop() { 
 
