@@ -123,7 +123,7 @@ void simpleRead(void)
 
 void loop() { 
 
-  button1.update();
+  button1.update();//led ring
   simpleRead();//lux
   
   if (Switch == false)
