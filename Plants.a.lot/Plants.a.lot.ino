@@ -35,7 +35,7 @@ Bounce button1 = Bounce();
 CRGB leds[NUM_LEDS];
 
 
-void configureSensor(void)
+void configureSensor(void)//lux
 {
   // You can change the gain on the fly, to adapt to brighter/dimmer light situations
   //tsl.setGain(TSL2591_GAIN_LOW);    // 1x gain (bright light)
@@ -85,13 +85,14 @@ void setup()
    FastLED.setMaxPowerInVoltsAndMilliamps(5, 500);
   
    // 8mm Neopixel pins are WS2812B chipset, RGB ordering
+   FastLED.setBrightness(80);
    FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
    FastLED.clear();
 
   button1.attach (12, INPUT_PULLUP);
   pinMode(34, INPUT);
 
-  Serial.println(F("Starting Adafruit TSL2591 Test!"));
+  Serial.println(F("Starting Adafruit TSL2591 Test!"));//lux
   
   if (tsl.begin()) 
   {
