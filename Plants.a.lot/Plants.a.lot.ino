@@ -9,10 +9,12 @@
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);//lux
 
 // Common naming from FastLED demos
-#define DATA_PIN 17
+#define DATA_PIN 2
 #define NUM_LEDS 12
 #define DHTPIN 18 
-#define AUDIO_PIN 5;
+#define AUDIO_PIN 5
+#define SOIL_PIN 34
+#define DEBUG_BUTTON 12
 
 //clock
 #define RTCAddress 0x68
@@ -188,8 +190,8 @@ void setup()
    FastLED.clear();
 
   //button
-  button1.attach (12, INPUT_PULLUP);
-  pinMode(34, INPUT);
+  button1.attach (DEBUG_BUTTON, INPUT_PULLUP);
+  pinMode(SOIL_PIN, INPUT);
 
   
   /* Configure the sensor */
@@ -225,7 +227,7 @@ void loop() {
    //Read data and store it to variables hum and temp
     hum = dht.readHumidity();
     temp= dht.readTemperature();
-    int sensorValue = analogRead(34);
+    int sensorValue = analogRead(SOIL_PIN);
 
     //Print temp and humidity values to serial monitor
     Serial.print("Humidity: ");
