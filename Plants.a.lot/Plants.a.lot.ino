@@ -14,6 +14,10 @@ Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);//lux
 #define DHTPIN 18 
 #define AUDIO_PIN 5;
 
+//clock
+#define RTCAddress 0x68
+
+#define DHTPIN 18 
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 DHT dht(DHTPIN, DHTTYPE); //// Initialize DHT sensor for normal 16mhz Arduino
 
@@ -34,9 +38,101 @@ Bounce button1 = Bounce();
 // Array of led data
 CRGB leds[NUM_LEDS];
 
-
-void configureSensor(void)//lux
+//clock
+byte bcd2dec (byte val)
 {
+  return((val/16*10)+(val%16));
+}
+
+byte dec2bcd (byte val)
+{
+  return((val/10*16)+(val%10));
+}
+
+void setTime(byte second, byte minute, byte hour, byte day, byte date, byte month, byte year)
+{
+  Wire.beginTransmission(RTCAddress);
+  Wire.write(0);
+  Wire.write(dec2bcd(second));
+  Wire.write(dec2bcd(minute));
+  Wire.write(dec2bcd(hour));
+  Wire.write(dec2bcd(day));
+  Wire.write(dec2bcd(date));
+  Wire.write(dec2bcd(month));
+  Wire.write(dec2bcd(year));
+  Wire.endTransmission();
+}
+
+void readTime(byte *second, byte *minute, byte *hour, byte *day, byte *date, byte *month, byte *year)
+{
+  Wire.beginTransmission(RTCAddress);
+  Wire.write(0);
+  Wire.endTransmission();
+  Wire.requestFrom(RTCAddress, 7);
+  *second= bcd2dec(Wire.read() & 0x7F);
+  *minute= bcd2dec(Wire.read());
+  *hour= bcd2dec(Wire.read()& 0x3F);
+  *day= bcd2dec(Wire.read());
+  *date= bcd2dec(Wire.read());
+  *month= bcd2dec(Wire.read());
+  *year= bcd2dec(Wire.read());
+  
+}
+
+void displayTime()
+{
+  byte second, minute, hour, day, date, month, year;
+  readTime(&second, &minute, &hour, &day, &date, &month, &year);
+  Serial.print(second);
+  Serial.print(":");
+  Serial.print(minute);
+  Serial.print(":");
+  Serial.print(hour);
+  Serial.print(":");
+  Serial.print(day);
+  Serial.print(":");
+  Serial.print(date);
+  Serial.print("/");
+  Serial.print(month);
+  Serial.print("/");
+  Serial.print(year);
+  Serial.println();
+}
+
+void light ()
+{
+  EVERY_N_MILLIS(2) 
+    {
+      // Clear strip
+        FastLED.clear();
+      
+        // beat8(x) returns a number from 0 to 255, looping x times per minute
+        uint8_t pos = beat8(bpm); 
+
+        // Convert the position to an index for the LED on our strip
+        uint8_t led = map8(pos,0,NUM_LEDS-1);
+        leds[led] = CRGB::Green;
+        FastLED.show();
+    }
+
+   EVERY_N_MILLIS(2) 
+   {
+      // Clear strip
+      FastLED.clear();
+      
+      // beat8(x) returns a number from 0 to 255, looping x times per minute
+      uint8_t pos = beat8(bpm)+127; // so you move it to the other side
+
+      // Convert the position to an index for the LED on our strip
+      uint8_t led = map8(pos,0,NUM_LEDS-1);
+      leds[led] = CRGB::Green;
+      FastLED.show();
+   }
+}
+//lux
+void configureSensor(void)
+{
+  
   // You can change the gain on the fly, to adapt to brighter/dimmer light situations
   //tsl.setGain(TSL2591_GAIN_LOW);    // 1x gain (bright light)
   tsl.setGain(TSL2591_GAIN_MED);      // 25x gain
@@ -52,35 +148,37 @@ void configureSensor(void)//lux
   // tsl.setTiming(TSL2591_INTEGRATIONTIME_600MS);  // longest integration time (dim light)
 
   /* Display the gain and integration time for reference sake */  
-  Serial.println(F("------------------------------------"));
-  Serial.print  (F("Gain:         "));
   tsl2591Gain_t gain = tsl.getGain();
-  switch(gain)
-  {
-    case TSL2591_GAIN_LOW:
-      Serial.println(F("1x (Low)"));
-      break;
-    case TSL2591_GAIN_MED:
-      Serial.println(F("25x (Medium)"));
-      break;
-    case TSL2591_GAIN_HIGH:
-      Serial.println(F("428x (High)"));
-      break;
-    case TSL2591_GAIN_MAX:
-      Serial.println(F("9876x (Max)"));
-      break;
-  }
-  Serial.print  (F("Timing:       "));
-  Serial.print((tsl.getTiming() + 1) * 100, DEC); 
-  Serial.println(F(" ms"));
-  Serial.println(F("------------------------------------"));
-  Serial.println(F(""));
+//  switch(gain)
+//  {
+//    case TSL2591_GAIN_LOW:
+//      Serial.println(F("1x (Low)"));
+//      break;
+//    case TSL2591_GAIN_MED:
+//      Serial.println(F("25x (Medium)"));
+//      break;
+//    case TSL2591_GAIN_HIGH:
+//      Serial.println(F("428x (High)"));
+//      break;
+//    case TSL2591_GAIN_MAX:
+//      Serial.println(F("9876x (Max)"));
+//      break;
+//  }
+//  Serial.print  (F("Timing:       "));
+//  Serial.print((tsl.getTiming() + 1) * 100, DEC); 
+//  Serial.println(F(" ms"));
+//  Serial.println(F("------------------------------------"));
+//  Serial.println(F(""));
 }
 
 void setup() 
 { 
    Serial.begin(9600);
    dht.begin();
+
+   //clock
+   Wire.begin(); 
+   setTime(0,3,16,5,1,5,20);
    
    FastLED.setMaxPowerInVoltsAndMilliamps(5, 500);
   
@@ -89,80 +187,35 @@ void setup()
    FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
    FastLED.clear();
 
+  //button
   button1.attach (12, INPUT_PULLUP);
   pinMode(34, INPUT);
 
-  Serial.println(F("Starting Adafruit TSL2591 Test!"));//lux
-  
-  if (tsl.begin()) 
-  {
-    Serial.println(F("Found a TSL2591 sensor"));
-  } 
-  else 
-  {
-    Serial.println(F("No sensor found ... check your wiring?"));
-    while (1);
-  }
   
   /* Configure the sensor */
-  configureSensor();//lux
+  //lux
+  configureSensor();
 }
 
 void simpleRead(void)
 {
-  // Simple data read example. Just read the infrared, fullspecrtrum diode 
-  // or 'visible' (difference between the two) channels.
-  // This can take 100-600 milliseconds! Uncomment whichever of the following you want to read
   uint16_t x = tsl.getLuminosity(TSL2591_VISIBLE);
-  //uint16_t x = tsl.getLuminosity(TSL2591_FULLSPECTRUM);
-  //uint16_t x = tsl.getLuminosity(TSL2591_INFRARED);
-
- 
-  Serial.print(F("Luminosity: "));
-  Serial.println(x, DEC);
 }
 
-void playAudio() {
-    digitalWrite(AUDIO_PIN, HIGH);
-    digitalWrite(AUDIO_PIN, LOW);
-}
 
 void loop() { 
 
   button1.update();//led ring
   simpleRead();//lux
+
+  //clock
+  displayTime();
+  delay(1000);
   
   if (Switch == false)
   { 
-    EVERY_N_MILLIS(2) 
-    {
-      // Clear strip
-        FastLED.clear();
-      
-        // beat8(x) returns a number from 0 to 255, looping x times per minute
-        uint8_t pos = beat8(bpm); 
-
-        // Convert the position to an index for the LED on our strip
-        uint8_t led = map8(pos,0,NUM_LEDS-1);
-        leds[led] = CRGB::Green;
-        FastLED.show();
-    }
-
-//   EVERY_N_MILLIS(2) 
-//   {
-//      // Clear strip
-//      FastLED.clear();
-//      
-//      // beat8(x) returns a number from 0 to 255, looping x times per minute
-//      uint8_t pos = beat8(bpm)+127; // so you move it to the other side
-//
-//      // Convert the position to an index for the LED on our strip
-//      uint8_t led = map8(pos,0,NUM_LEDS-1);
-//      leds[led] = CRGB::Green;
-//      FastLED.show();
-//   }
+    light ();
   }
-
    if(button1.rose())
    {
       Switch = !Switch;
