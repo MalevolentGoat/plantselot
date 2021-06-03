@@ -89,8 +89,10 @@ void displayTime()
   Serial.print(":");
   Serial.print(hour);
   Serial.print(":");
+  Serial.print("  ");
   Serial.print(day);
   Serial.print(":");
+  Serial.print("  ");
   Serial.print(date);
   Serial.print("/");
   Serial.print(month);
@@ -178,7 +180,7 @@ void setup()
 
    //clock
    Wire.begin(); 
-   setTime(0,3,16,5,1,5,20);
+   setTime(0,28,14,4,3,6,21);
    
    FastLED.setMaxPowerInVoltsAndMilliamps(5, 500);
   
@@ -206,7 +208,7 @@ void simpleRead(void)
 void loop() { 
 
   button1.update();//led ring
-  simpleRead();//lux
+//  simpleRead();//lux
 
   //clock
   displayTime();
@@ -223,18 +225,18 @@ void loop() {
    }
 
    //Read data and store it to variables hum and temp
-    hum = dht.readHumidity();
-    temp= dht.readTemperature();
-    int sensorValue = analogRead(34);
-
-    //Print temp and humidity values to serial monitor
-    Serial.print("Humidity: ");
-    Serial.print(hum);
-    Serial.println(" %");
-    Serial.print("Temp: ");
-    Serial.print(temp);
-    Serial.println(" Celsius");
-    Serial.print("Humidity Soil: ");
-    Serial.println(sensorValue);
+//    hum = dht.readHumidity();
+//    temp= dht.readTemperature();
+//    int sensorValue = analogRead(34);
+//
+//    //Print temp and humidity values to serial monitor
+//    Serial.print("Humidity: ");
+//    Serial.print(hum);
+//    Serial.println(" %");
+//    Serial.print("Temp: ");
+//    Serial.print(temp);
+//    Serial.println(" Celsius");
+//    Serial.print("Humidity Soil: ");
+//    Serial.println(sensorValue);
     
 }
