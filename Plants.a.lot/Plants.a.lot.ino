@@ -9,9 +9,8 @@
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);//lux
 
 // Common naming from FastLED demos
-#define DATA_PIN 2
+#define DATA_PIN 4
 #define NUM_LEDS 12
-#define DHTPIN 18 
 #define AUDIO_PIN 5
 #define SOIL_PIN 34
 #define DEBUG_BUTTON 12
@@ -105,13 +104,13 @@ void displayTime()
 
 void light ()
 {
-  EVERY_N_MILLIS(2) 
+  EVERY_N_MILLIS(2)
     {
       // Clear strip
         FastLED.clear();
       
         // beat8(x) returns a number from 0 to 255, looping x times per minute
-        uint8_t pos = beat8(bpm); 
+        uint8_t pos = beat8(bpm);
 
         // Convert the position to an index for the LED on our strip
         uint8_t led = map8(pos,0,NUM_LEDS-1);

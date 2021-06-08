@@ -48,19 +48,16 @@ void light (bool x)
 //        leds[led] = CRGB::Green;
 //        FastLED.show();
 //    }
-      FastLED.clear();
-      if (x == true){
-  
-      for(int led=0; led<NUM_LEDS; led++)
-      {
+  FastLED.clear();
+  if (x == true) {
+    for(int led=0; led<NUM_LEDS; led++)
+    {
       leds[led] = CRGB::Green;
-      }
-      FastLED.show();
-      }
-
-      else if (x == false){
-        FastLED.clear();
-      }
+    }
+  } else {
+    FastLED.clear();
+  }
+  FastLED.show();
 }
 
 //lux
@@ -93,7 +90,7 @@ void setup()
 
 void loop() {
   
-  EVERY_N_MILLIS(3600) 
+  EVERY_N_MILLIS(700) 
    {
     simpleRead();//lux
     if (tsl.getLuminosity(TSL2591_VISIBLE)< 1100)
@@ -111,7 +108,7 @@ void loop() {
     }
    }
   
-   EVERY_N_MILLIS(3000) 
+   EVERY_N_MILLIS(1100) 
    {
    hum = dht.readHumidity();
    temp= dht.readTemperature();
@@ -130,14 +127,14 @@ void loop() {
     }
     else
     {
-      FastLED.clear();
+      light(false);
     }
    }
    
-   EVERY_N_MILLIS(3000) 
+   EVERY_N_MILLIS(1300) 
    {
     int sensorValue = analogRead(SOIL_PIN);
-    if (analogRead(SOIL_PIN) >2500)
+    if (analogRead(SOIL_PIN)>2500)
     {
       light (true);
       Serial.print("Humidity Soil: ");
@@ -146,7 +143,7 @@ void loop() {
     }
     else
     {
-      FastLED.clear();
+      light(false);
     }
    }
   
