@@ -11,13 +11,13 @@ AutoConnect Portal(Server);
 #include "Adafruit_TSL2591.h"
 //lux
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);
-#define TSL_SDA 23
-#define TSL_SCL 19
+#define TSL_SDA 21
+#define TSL_SCL 22
 //LED
 #define DATA_PIN 17
 #define NUM_LEDS 12
 //
-#define AUDIO_PIN 5
+#define AUDIO_PIN 4
 #define SOIL_PIN 34
 //DHT22
 #define DHTPIN 18
@@ -83,6 +83,7 @@ void light(bool x)
 
 void setup() 
 {
+  Serial.begin(9600);
   delay(1000);
   Wire.begin(TSL_SDA, TSL_SCL);
   Server.on("/", sendPage);
@@ -100,6 +101,7 @@ void setup()
 
 void luxCheck() {
   int x = tsl.getLuminosity(TSL2591_VISIBLE);
+  Serial.println(x);
   if (x< 1100) {
     luxFlag = true;
   } else {
@@ -108,6 +110,7 @@ void luxCheck() {
 }
 void humCheck() {
   int hum = dht.readHumidity();
+  Serial.println(hum);
   if (hum < 40) {
     humFlag = true;
   } else {
@@ -116,6 +119,7 @@ void humCheck() {
 }
 void soilCheck() {
   int sensorValue = analogRead(SOIL_PIN);
+  Serial.println(sensorValue);
   if (analogRead(SOIL_PIN)>2500) {
     soilFlag = true;
   } else {
