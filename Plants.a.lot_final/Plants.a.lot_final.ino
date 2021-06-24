@@ -33,13 +33,13 @@ bool audioFlag = false;
 
 void sendPage() {
   if(luxFlag) {
-    Server.sendHeader("Location","https://plantsalot.netlify.app/dark"); 
+    Server.sendHeader("Location","https://plantsalot.netlify.app/attack/dark"); 
     Server.send(303);
   } else if(humFlag || soilFlag) {
-    Server.sendHeader("Location","https://plantsalot.netlify.app/dry"); 
+    Server.sendHeader("Location","https://plantsalot.netlify.app/attack/dry"); 
     Server.send(303);
   } else {
-    Server.sendHeader("Location","https://plantsalot.netlify.app/safe"); 
+    Server.sendHeader("Location","https://plantsalot.netlify.app/attack/safe"); 
     Server.send(303);
   }
 }
